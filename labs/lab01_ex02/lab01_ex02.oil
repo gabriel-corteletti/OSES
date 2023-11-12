@@ -1,0 +1,65 @@
+OIL_VERSION = "2.5";
+
+
+CPU only_one_periodic_task {
+  OS config {
+    STATUS = STANDARD;
+    BUILD = TRUE {
+      TRAMPOLINE_BASE_PATH = "../..";
+  	APP_NAME = "ex02";
+  	APP_SRC = "lab01_ex02.cpp";
+  	CPPCOMPILER = "avr-g++";
+  	COMPILER = "avr-gcc";
+  	LINKER = "avr-gcc";
+  	ASSEMBLER = "avr-gcc";
+  	COPIER = "avr-objcopy";
+  	SYSTEM = PYTHON;
+    };
+    SYSTEM_CALL = TRUE;
+  };
+ 
+  APPMODE stdAppmode {};
+ 
+  ALARM a500msec {
+	COUNTER = SystemCounter;
+	ACTION = ACTIVATETASK { TASK = TaskA; };
+	AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 488; CYCLETIME = 488; };
+  };
+
+  ALARM a750msec {
+	COUNTER = SystemCounter;
+	ACTION = ACTIVATETASK { TASK = TaskB; };
+	AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 1465; CYCLETIME = 732; };
+  };
+ 
+  ALARM stopper {
+	COUNTER = SystemCounter;
+	ACTION = ACTIVATETASK { TASK = stop; };
+	AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 5859; CYCLETIME = 0; };
+  };
+    
+  TASK TaskA {
+	PRIORITY = 2;
+	AUTOSTART = TRUE { APPMODE = stdAppmode; };
+	ACTIVATION = 1;
+	SCHEDULE = FULL;
+	STACKSIZE = 256;
+  };
+
+  TASK TaskB {
+	PRIORITY = 1;
+	AUTOSTART = FALSE;
+	ACTIVATION = 1;
+	SCHEDULE = FULL;
+	STACKSIZE = 256;
+  };
+
+  TASK stop {
+	PRIORITY = 99;
+	AUTOSTART = FALSE;
+	ACTIVATION = 1;
+	SCHEDULE = FULL;
+	STACKSIZE = 256;
+  };
+ 
+};
