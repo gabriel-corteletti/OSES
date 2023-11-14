@@ -1,0 +1,118 @@
+
+OIL_VERSION = "2.5";
+
+CPU test {    
+  OS config {
+    STATUS = STANDARD;
+    BUILD = TRUE {
+      TRAMPOLINE_BASE_PATH = "/mnt/d/dhanesh/trampoline";
+      APP_NAME = "lab2_ex1_arduino";
+      APP_SRC = "lab2_ex1.cpp";
+      CPPCOMPILER = "avr-g++";
+      COMPILER = "avr-gcc";
+      LINKER = "avr-gcc";
+      ASSEMBLER = "avr-gcc";
+      COPIER = "avr-objcopy";
+      SYSTEM = PYTHON;
+    };
+    SYSTEM_CALL = TRUE;
+  };
+
+  APPMODE stdAppmode {};
+  
+  ALARM one_msec_task1 {
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK { TASK = TaskV; };
+    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 10; CYCLETIME = 100; };
+  };
+
+  ALARM 500_msec_taskM {
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK { TASK = TaskM; };
+    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 500; CYCLETIME = 500; };
+  };
+
+ ALARM 100_msec_taskC {
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK { TASK = TaskC; };
+    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 100; CYCLETIME = 100; };
+  };
+  
+  ALARM stopper {
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK { TASK = stop; };
+    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 10000; CYCLETIME = 0; };
+  };
+ 
+ MESSAGE send_m {
+    MESSAGEPROPERTY = SEND_STATIC_INTERNAL {
+      CDATATYPE = "uint32_t";
+    };
+  };
+
+MESSAGE receive_m{
+    MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
+      SENDINGMESSAGE = send_m;
+      FILTER = NEWISOUTSIDE {
+        MIN = 0x00000000;
+        MAX = 0xFFFFFFFF;
+      };
+      INITIALVALUE = 0x00FEFE00;
+    };
+    NOTIFICATION = ACTIVATETASK {
+      TASK = TaskM;
+    };
+  };
+
+MESSAGE send_v {
+    MESSAGEPROPERTY = SEND_STATIC_INTERNAL {
+      CDATATYPE = "uint32_t";
+    };
+  };
+
+MESSAGE receive_v{
+    MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
+      SENDINGMESSAGE = send_v;
+      FILTER = NEWISOUTSIDE {
+        MIN = 0x00000000;
+        MAX = 0xFFFFFFFF;
+      };
+      INITIALVALUE = 0x00FEFE00;
+    };
+    NOTIFICATION = ACTIVATETASK {
+      TASK = TaskV;
+    };
+  };
+
+  TASK TaskV {
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    MESSAGE = receive_v;
+  };
+
+  TASK TaskM{
+    PRIORITY = 2;
+    AUTOSTART = FALSE;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    MESSAGE = receive_m;
+    MESSAGE = send_v;
+  };
+
+  TASK TaskC{
+    PRIORITY = 3;
+    AUTOSTART = FALSE;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    MESSAGE = send_m;
+  };
+  TASK stop {
+    PRIORITY = 99;
+    AUTOSTART = FALSE;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+  
+};
