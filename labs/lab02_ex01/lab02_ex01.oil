@@ -49,10 +49,10 @@ CPU MVC_system {
     AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 488; CYCLETIME = 488; };
   };
 
- ALARM alarmV {               //every 500ms
+ ALARM alarmV {               //every 125ms
     COUNTER = SystemCounter;
     ACTION = ACTIVATETASK { TASK = TaskV; };
-    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 488; CYCLETIME = 488; };
+    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 122; CYCLETIME = 122; };
   };
 
 
@@ -70,9 +70,9 @@ CPU MVC_system {
       FILTER = NEWISDIFFERENT;
       INITIALVALUE = 0;
     };
-    NOTIFICATION = ACTIVATETASK {
-      TASK = TaskM;
-    };
+    // NOTIFICATION = ACTIVATETASK {
+    //   TASK = TaskM;
+    // };
   }; 
 
   MESSAGE msgM_send {             //message PRODUCED by M
@@ -87,9 +87,9 @@ CPU MVC_system {
       FILTER = NEWISDIFFERENT;
       INITIALVALUE = 0;
     };
-    NOTIFICATION = ACTIVATETASK {
-      TASK = TaskV;
-    };
+    // NOTIFICATION = ACTIVATETASK {
+    //   TASK = TaskV;
+    // };
   };
 
 
@@ -105,7 +105,7 @@ CPU MVC_system {
   };
 
   TASK TaskM {
-    PRIORITY = 2;
+    PRIORITY = 1;
     AUTOSTART = TRUE { APPMODE = stdAppmode; };
     MESSAGE = msgM_receive;
     MESSAGE = msgM_send;
@@ -114,7 +114,7 @@ CPU MVC_system {
   };
 
   TASK TaskV {
-    PRIORITY = 1;
+    PRIORITY = 2;
     AUTOSTART = TRUE { APPMODE = stdAppmode; };
     MESSAGE = msgV_receive;
     ACTIVATION = 1;

@@ -56,7 +56,7 @@
       "AUTOSTART" : "true",
       "AUTOSTART_S" : 
       {
-        "ALARMTIME" : 488,
+        "ALARMTIME" : 122,
         "APPMODE" : 
         [
           
@@ -64,7 +64,7 @@
             "VALUE" : "stdAppmode"
           }
         ],
-        "CYCLETIME" : 488
+        "CYCLETIME" : 122
       },
       "COUNTER" : "SystemCounter",
       "NAME" : "alarmV"
@@ -95,12 +95,8 @@
         "SENDINGMESSAGE" : "msgC_send"
       },
       "NAME" : "msgM_receive",
-      "NOTIFICATION" : "ACTIVATETASK",
-      "NOTIFICATIONERROR" : "NONE",
-      "NOTIFICATION_S" : 
-      {
-        "TASK" : "TaskM"
-      }
+      "NOTIFICATION" : "NONE",
+      "NOTIFICATIONERROR" : "NONE"
     },    
     {
       "MESSAGEPROPERTY" : "SEND_STATIC_INTERNAL",
@@ -121,46 +117,14 @@
         "SENDINGMESSAGE" : "msgM_send"
       },
       "NAME" : "msgV_receive",
-      "NOTIFICATION" : "ACTIVATETASK",
-      "NOTIFICATIONERROR" : "NONE",
-      "NOTIFICATION_S" : 
-      {
-        "TASK" : "TaskV"
-      }
+      "NOTIFICATION" : "NONE",
+      "NOTIFICATIONERROR" : "NONE"
     }
   ],
   "resource" : [],
   "task" : 
   [
     
-    {
-      "ACTIVATION" : 1,
-      "AUTOSTART" : "true",
-      "AUTOSTART_S" : 
-      {
-        "APPMODE" : 
-        [
-          
-          {
-            "VALUE" : "stdAppmode"
-          }
-        ]
-      },
-      "KIND" : "Task",
-      "MESSAGE" : 
-      [
-        
-        {
-          "VALUE" : "msgV_receive"
-        }
-      ],
-      "NAME" : "TaskV",
-      "NONPREEMPTABLE" : "false",
-      "PRIORITY" : 1,
-      "SCHEDULE" : "FULL",
-      "STACKSIZE" : 256,
-      "USEINTERNALRESOURCE" : "false"
-    },    
     {
       "ACTIVATION" : 1,
       "AUTOSTART" : "true",
@@ -186,6 +150,34 @@
         }
       ],
       "NAME" : "TaskM",
+      "NONPREEMPTABLE" : "false",
+      "PRIORITY" : 1,
+      "SCHEDULE" : "FULL",
+      "STACKSIZE" : 256,
+      "USEINTERNALRESOURCE" : "false"
+    },    
+    {
+      "ACTIVATION" : 1,
+      "AUTOSTART" : "true",
+      "AUTOSTART_S" : 
+      {
+        "APPMODE" : 
+        [
+          
+          {
+            "VALUE" : "stdAppmode"
+          }
+        ]
+      },
+      "KIND" : "Task",
+      "MESSAGE" : 
+      [
+        
+        {
+          "VALUE" : "msgV_receive"
+        }
+      ],
+      "NAME" : "TaskV",
       "NONPREEMPTABLE" : "false",
       "PRIORITY" : 2,
       "SCHEDULE" : "FULL",
