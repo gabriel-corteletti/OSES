@@ -1,0 +1,124 @@
+OIL_VERSION = "2.5";
+
+
+IMPLEMENTATION trampoline {
+	//Fix the default STACKSIZE of tasks
+	TASK {
+    UINT32 STACKSIZE = 256;
+	};
+};
+
+
+CPU MVC_system {
+  OS config {
+    STATUS = STANDARD;
+    BUILD = TRUE {
+      TRAMPOLINE_BASE_PATH = "../..";
+      APP_NAME = "lab02_ex02_exe";
+      APP_SRC = "lab02_ex02.cpp";
+      CPPCOMPILER = "avr-g++";
+      COMPILER = "avr-gcc";
+      LINKER = "avr-gcc";
+      ASSEMBLER = "avr-gcc";
+      COPIER = "avr-objcopy";
+      SYSTEM = PYTHON;
+      
+      LIBRARY = serial;         //JUST FOR DEBBUGING
+    };
+    SYSTEM_CALL = TRUE;
+  };
+ 
+  APPMODE stdAppmode {};
+  
+  // RESOURCE sem {              //semaphore mechanism
+  // 	RESOURCEPROPERTY = STANDARD;
+  // };
+
+
+  /************* ALARMS DEFINITION *************/
+
+  ALARM alarmC {              //every 100ms
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK { TASK = TaskC; };
+    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 98; CYCLETIME = 98; };
+  };
+  
+  // ALARM alarmM {              //every 500ms
+  //   COUNTER = SystemCounter;
+  //   ACTION = ACTIVATETASK { TASK = TaskM; };
+  //   AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 488; CYCLETIME = 488; };
+  // };
+
+ ALARM alarmV {               //every 125ms
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK { TASK = TaskV; };
+    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 122; CYCLETIME = 122; };
+  };
+
+
+  /************* MESSAGES DEFINITION *************/
+
+  MESSAGE msgC_send {             //message PRODUCED by C
+    MESSAGEPROPERTY = SEND_STATIC_INTERNAL{
+      CDATATYPE = "uint32_t";
+    };
+  };
+    
+   MESSAGE msgM_receive {         //message RECEIVED by M
+    MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
+      SENDINGMESSAGE = msgC_send;
+      FILTER = NEWISDIFFERENT;
+      INITIALVALUE = 0;
+    };
+    NOTIFICATION = ACTIVATETASK {
+      TASK = TaskM;
+    };
+  }; 
+
+  MESSAGE msgM_send {             //message PRODUCED by M
+    MESSAGEPROPERTY = SEND_STATIC_INTERNAL{
+      CDATATYPE = "uint32_t";
+    };
+  };
+
+  MESSAGE msgV_receive {          //message RECEIVED by V
+    MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
+      SENDINGMESSAGE = msgM_send;
+      FILTER = NEWISDIFFERENT;
+      INITIALVALUE = 0;
+    };
+    // NOTIFICATION = ACTIVATETASK {
+    //   TASK = TaskV;
+    // };
+  };
+
+
+  /************* TASKS DEFINITION *************/
+
+
+  TASK TaskC {
+    PRIORITY = 3;
+    AUTOSTART = TRUE { APPMODE = stdAppmode; };
+    MESSAGE = msgC_send;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK TaskM {
+    PRIORITY = 1;
+    AUTOSTART = TRUE { APPMODE = stdAppmode; };
+    MESSAGE = msgM_receive;
+    MESSAGE = msgM_send;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK TaskV {
+    PRIORITY = 2;
+    AUTOSTART = TRUE { APPMODE = stdAppmode; };
+    MESSAGE = msgV_receive;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+};

@@ -1,0 +1,198 @@
+
+{
+  "alarm" : 
+  [
+    
+    {
+      "ACTION" : "ACTIVATETASK",
+      "ACTION_S" : 
+      {
+        "TASK" : "TaskC"
+      },
+      "AUTOSTART" : "true",
+      "AUTOSTART_S" : 
+      {
+        "ALARMTIME" : 98,
+        "APPMODE" : 
+        [
+          
+          {
+            "VALUE" : "stdAppmode"
+          }
+        ],
+        "CYCLETIME" : 98
+      },
+      "COUNTER" : "SystemCounter",
+      "NAME" : "alarmC"
+    },    
+    {
+      "ACTION" : "ACTIVATETASK",
+      "ACTION_S" : 
+      {
+        "TASK" : "TaskV"
+      },
+      "AUTOSTART" : "true",
+      "AUTOSTART_S" : 
+      {
+        "ALARMTIME" : 122,
+        "APPMODE" : 
+        [
+          
+          {
+            "VALUE" : "stdAppmode"
+          }
+        ],
+        "CYCLETIME" : 122
+      },
+      "COUNTER" : "SystemCounter",
+      "NAME" : "alarmV"
+    }
+  ],
+  "event" : [],
+  "ioc" : [],
+  "isr" : [],
+  "message" : 
+  [
+    
+    {
+      "MESSAGEPROPERTY" : "SEND_STATIC_INTERNAL",
+      "MESSAGEPROPERTY_S" : 
+      {
+        "CDATATYPE" : "uint32_t"
+      },
+      "NAME" : "msgC_send",
+      "NOTIFICATION" : "NONE",
+      "NOTIFICATIONERROR" : "NONE"
+    },    
+    {
+      "MESSAGEPROPERTY" : "RECEIVE_UNQUEUED_INTERNAL",
+      "MESSAGEPROPERTY_S" : 
+      {
+        "FILTER" : "NEWISDIFFERENT",
+        "INITIALVALUE" : 0,
+        "SENDINGMESSAGE" : "msgC_send"
+      },
+      "NAME" : "msgM_receive",
+      "NOTIFICATION" : "ACTIVATETASK",
+      "NOTIFICATIONERROR" : "NONE",
+      "NOTIFICATION_S" : 
+      {
+        "TASK" : "TaskM"
+      }
+    },    
+    {
+      "MESSAGEPROPERTY" : "SEND_STATIC_INTERNAL",
+      "MESSAGEPROPERTY_S" : 
+      {
+        "CDATATYPE" : "uint32_t"
+      },
+      "NAME" : "msgM_send",
+      "NOTIFICATION" : "NONE",
+      "NOTIFICATIONERROR" : "NONE"
+    },    
+    {
+      "MESSAGEPROPERTY" : "RECEIVE_UNQUEUED_INTERNAL",
+      "MESSAGEPROPERTY_S" : 
+      {
+        "FILTER" : "NEWISDIFFERENT",
+        "INITIALVALUE" : 0,
+        "SENDINGMESSAGE" : "msgM_send"
+      },
+      "NAME" : "msgV_receive",
+      "NOTIFICATION" : "NONE",
+      "NOTIFICATIONERROR" : "NONE"
+    }
+  ],
+  "resource" : [],
+  "task" : 
+  [
+    
+    {
+      "ACTIVATION" : 1,
+      "AUTOSTART" : "true",
+      "AUTOSTART_S" : 
+      {
+        "APPMODE" : 
+        [
+          
+          {
+            "VALUE" : "stdAppmode"
+          }
+        ]
+      },
+      "KIND" : "Task",
+      "MESSAGE" : 
+      [
+        
+        {
+          "VALUE" : "msgM_receive"
+        },        
+        {
+          "VALUE" : "msgM_send"
+        }
+      ],
+      "NAME" : "TaskM",
+      "NONPREEMPTABLE" : "false",
+      "PRIORITY" : 1,
+      "SCHEDULE" : "FULL",
+      "STACKSIZE" : 256,
+      "USEINTERNALRESOURCE" : "false"
+    },    
+    {
+      "ACTIVATION" : 1,
+      "AUTOSTART" : "true",
+      "AUTOSTART_S" : 
+      {
+        "APPMODE" : 
+        [
+          
+          {
+            "VALUE" : "stdAppmode"
+          }
+        ]
+      },
+      "KIND" : "Task",
+      "MESSAGE" : 
+      [
+        
+        {
+          "VALUE" : "msgV_receive"
+        }
+      ],
+      "NAME" : "TaskV",
+      "NONPREEMPTABLE" : "false",
+      "PRIORITY" : 2,
+      "SCHEDULE" : "FULL",
+      "STACKSIZE" : 256,
+      "USEINTERNALRESOURCE" : "false"
+    },    
+    {
+      "ACTIVATION" : 1,
+      "AUTOSTART" : "true",
+      "AUTOSTART_S" : 
+      {
+        "APPMODE" : 
+        [
+          
+          {
+            "VALUE" : "stdAppmode"
+          }
+        ]
+      },
+      "KIND" : "Task",
+      "MESSAGE" : 
+      [
+        
+        {
+          "VALUE" : "msgC_send"
+        }
+      ],
+      "NAME" : "TaskC",
+      "NONPREEMPTABLE" : "false",
+      "PRIORITY" : 3,
+      "SCHEDULE" : "FULL",
+      "STACKSIZE" : 256,
+      "USEINTERNALRESOURCE" : "false"
+    }
+  ]
+}
