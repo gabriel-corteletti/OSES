@@ -1,11 +1,10 @@
-
 OIL_VERSION = "2.5";
 
 CPU test {    
   OS config {
     STATUS = STANDARD;
     BUILD = TRUE {
-      TRAMPOLINE_BASE_PATH = "/mnt/d/dhanesh/trampoline";
+      TRAMPOLINE_BASE_PATH = "/mnt/c/Users/Public/trampoline";
       APP_NAME = "lab2_ex1_arduino";
       APP_SRC = "lab2_ex1.cpp";
       CPPCOMPILER = "avr-g++";
@@ -20,22 +19,22 @@ CPU test {
 
   APPMODE stdAppmode {};
   
-  ALARM one_msec_task1 {
+  ALARM a50msec_taskV {
     COUNTER = SystemCounter;
     ACTION = ACTIVATETASK { TASK = TaskV; };
-    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 10; CYCLETIME = 100; };
+    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 98; CYCLETIME = 50; };
   };
 
-  ALARM 500_msec_taskM {
+  ALARM a500_msec_taskM {
     COUNTER = SystemCounter;
     ACTION = ACTIVATETASK { TASK = TaskM; };
-    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 500; CYCLETIME = 500; };
+    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 50; CYCLETIME = 500; };
   };
 
- ALARM 100_msec_taskC {
+ ALARM a100_msec_taskC {
     COUNTER = SystemCounter;
     ACTION = ACTIVATETASK { TASK = TaskC; };
-    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 100; CYCLETIME = 100; };
+    AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 20; CYCLETIME = 100; };
   };
   
   ALARM stopper {
@@ -46,19 +45,14 @@ CPU test {
  
  MESSAGE send_m {
     MESSAGEPROPERTY = SEND_STATIC_INTERNAL {
-      CDATATYPE = "uint32_t";
+      CDATATYPE = "uint32";
     };
   };
 
 MESSAGE receive_m{
     MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
       SENDINGMESSAGE = send_m;
-      FILTER = NEWISOUTSIDE {
-        MIN = 0x00000000;
-        MAX = 0xFFFFFFFF;
-      };
-      INITIALVALUE = 0x00FEFE00;
-    };
+    }
     NOTIFICATION = ACTIVATETASK {
       TASK = TaskM;
     };
@@ -66,19 +60,14 @@ MESSAGE receive_m{
 
 MESSAGE send_v {
     MESSAGEPROPERTY = SEND_STATIC_INTERNAL {
-      CDATATYPE = "uint32_t";
+      CDATATYPE = "uint32";
     };
   };
 
 MESSAGE receive_v{
     MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
       SENDINGMESSAGE = send_v;
-      FILTER = NEWISOUTSIDE {
-        MIN = 0x00000000;
-        MAX = 0xFFFFFFFF;
-      };
-      INITIALVALUE = 0x00FEFE00;
-    };
+    }
     NOTIFICATION = ACTIVATETASK {
       TASK = TaskV;
     };

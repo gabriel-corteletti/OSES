@@ -22,7 +22,6 @@ CPU MVC_system {
       ASSEMBLER = "avr-gcc";
       COPIER = "avr-objcopy";
       SYSTEM = PYTHON;
-      
       LIBRARY = serial;         //JUST FOR DEBBUGING
     };
     SYSTEM_CALL = TRUE;
@@ -30,10 +29,6 @@ CPU MVC_system {
  
   APPMODE stdAppmode {};
   
-  // RESOURCE sem {              //semaphore mechanism
-  // 	RESOURCEPROPERTY = STANDARD;
-  // };
-
 
   /************* ALARMS DEFINITION *************/
 
@@ -64,15 +59,12 @@ CPU MVC_system {
     };
   };
     
-   MESSAGE msgM_receive {         //message RECEIVED by M
+  MESSAGE msgM_receive {         //message RECEIVED by M
     MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
       SENDINGMESSAGE = msgC_send;
       FILTER = NEWISDIFFERENT;
       INITIALVALUE = 0;
     };
-    // NOTIFICATION = ACTIVATETASK {
-    //   TASK = TaskM;
-    // };
   }; 
 
   MESSAGE msgM_send {             //message PRODUCED by M
@@ -87,9 +79,6 @@ CPU MVC_system {
       FILTER = NEWISDIFFERENT;
       INITIALVALUE = 0;
     };
-    // NOTIFICATION = ACTIVATETASK {
-    //   TASK = TaskV;
-    // };
   };
 
 
@@ -105,7 +94,7 @@ CPU MVC_system {
   };
 
   TASK TaskM {
-    PRIORITY = 1;
+    PRIORITY = 2;
     AUTOSTART = TRUE { APPMODE = stdAppmode; };
     MESSAGE = msgM_receive;
     MESSAGE = msgM_send;
@@ -114,8 +103,8 @@ CPU MVC_system {
   };
 
   TASK TaskV {
-    PRIORITY = 2;
-    AUTOSTART = TRUE { APPMODE = stdAppmode; };
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
     MESSAGE = msgV_receive;
     ACTIVATION = 1;
     SCHEDULE = FULL;

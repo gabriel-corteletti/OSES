@@ -69,7 +69,7 @@
       "MESSAGEPROPERTY_S" : 
       {
         "FILTER" : "NEWISDIFFERENT",
-        "INITIALVALUE" : 0,
+        "INITIALVALUE" : 65535,
         "SENDINGMESSAGE" : "msgC_send"
       },
       "NAME" : "msgM_receive",
@@ -109,17 +109,25 @@
     
     {
       "ACTIVATION" : 1,
-      "AUTOSTART" : "true",
-      "AUTOSTART_S" : 
-      {
-        "APPMODE" : 
-        [
-          
-          {
-            "VALUE" : "stdAppmode"
-          }
-        ]
-      },
+      "AUTOSTART" : "false",
+      "KIND" : "Task",
+      "MESSAGE" : 
+      [
+        
+        {
+          "VALUE" : "msgV_receive"
+        }
+      ],
+      "NAME" : "TaskV",
+      "NONPREEMPTABLE" : "false",
+      "PRIORITY" : 1,
+      "SCHEDULE" : "FULL",
+      "STACKSIZE" : 256,
+      "USEINTERNALRESOURCE" : "false"
+    },    
+    {
+      "ACTIVATION" : 1,
+      "AUTOSTART" : "false",
       "KIND" : "Task",
       "MESSAGE" : 
       [
@@ -132,34 +140,6 @@
         }
       ],
       "NAME" : "TaskM",
-      "NONPREEMPTABLE" : "false",
-      "PRIORITY" : 1,
-      "SCHEDULE" : "FULL",
-      "STACKSIZE" : 256,
-      "USEINTERNALRESOURCE" : "false"
-    },    
-    {
-      "ACTIVATION" : 1,
-      "AUTOSTART" : "true",
-      "AUTOSTART_S" : 
-      {
-        "APPMODE" : 
-        [
-          
-          {
-            "VALUE" : "stdAppmode"
-          }
-        ]
-      },
-      "KIND" : "Task",
-      "MESSAGE" : 
-      [
-        
-        {
-          "VALUE" : "msgV_receive"
-        }
-      ],
-      "NAME" : "TaskV",
       "NONPREEMPTABLE" : "false",
       "PRIORITY" : 2,
       "SCHEDULE" : "FULL",

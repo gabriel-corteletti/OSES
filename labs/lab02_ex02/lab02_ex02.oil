@@ -22,7 +22,6 @@ CPU MVC_system {
       ASSEMBLER = "avr-gcc";
       COPIER = "avr-objcopy";
       SYSTEM = PYTHON;
-      
       LIBRARY = serial;         //JUST FOR DEBBUGING
     };
     SYSTEM_CALL = TRUE;
@@ -30,10 +29,6 @@ CPU MVC_system {
  
   APPMODE stdAppmode {};
   
-  // RESOURCE sem {              //semaphore mechanism
-  // 	RESOURCEPROPERTY = STANDARD;
-  // };
-
 
   /************* ALARMS DEFINITION *************/
 
@@ -42,12 +37,6 @@ CPU MVC_system {
     ACTION = ACTIVATETASK { TASK = TaskC; };
     AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 98; CYCLETIME = 98; };
   };
-  
-  // ALARM alarmM {              //every 500ms
-  //   COUNTER = SystemCounter;
-  //   ACTION = ACTIVATETASK { TASK = TaskM; };
-  //   AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 488; CYCLETIME = 488; };
-  // };
 
  ALARM alarmV {               //every 125ms
     COUNTER = SystemCounter;
@@ -64,16 +53,16 @@ CPU MVC_system {
     };
   };
     
-   MESSAGE msgM_receive {         //message RECEIVED by M
+  MESSAGE msgM_receive {         //message RECEIVED by M
     MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
       SENDINGMESSAGE = msgC_send;
       FILTER = NEWISDIFFERENT;
-      INITIALVALUE = 0;
+      INITIALVALUE = 0xFFFF;    //unreachable value
     };
     NOTIFICATION = ACTIVATETASK {
       TASK = TaskM;
     };
-  }; 
+  };
 
   MESSAGE msgM_send {             //message PRODUCED by M
     MESSAGEPROPERTY = SEND_STATIC_INTERNAL{
@@ -87,9 +76,6 @@ CPU MVC_system {
       FILTER = NEWISDIFFERENT;
       INITIALVALUE = 0;
     };
-    // NOTIFICATION = ACTIVATETASK {
-    //   TASK = TaskV;
-    // };
   };
 
 
@@ -105,8 +91,8 @@ CPU MVC_system {
   };
 
   TASK TaskM {
-    PRIORITY = 1;
-    AUTOSTART = TRUE { APPMODE = stdAppmode; };
+    PRIORITY = 2;
+    AUTOSTART = FALSE;
     MESSAGE = msgM_receive;
     MESSAGE = msgM_send;
     ACTIVATION = 1;
@@ -114,8 +100,8 @@ CPU MVC_system {
   };
 
   TASK TaskV {
-    PRIORITY = 2;
-    AUTOSTART = TRUE { APPMODE = stdAppmode; };
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
     MESSAGE = msgV_receive;
     ACTIVATION = 1;
     SCHEDULE = FULL;

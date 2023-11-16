@@ -61,8 +61,8 @@
 CONST(tpl_application_mode, OS_CONST) stdAppmode = 0; /* mask = 1 */
 CONST(tpl_application_mode, OS_CONST) OSDEFAULTAPPMODE = 0;
 CONST(tpl_appmode_mask, OS_CONST) tpl_task_app_mode[TASK_COUNT] = {
+  0 /* task TaskV :  */ ,
   1 /* task TaskM : stdAppmode */ ,
-  1 /* task TaskV : stdAppmode */ ,
   1 /* task TaskC : stdAppmode */ 
 };
 
@@ -79,13 +79,13 @@ CONST(tpl_appmode_mask, OS_CONST) tpl_alarm_app_mode[ALARM_COUNT] = {
  * Declaration of processes IDs
  */
 
-/* Task TaskM identifier */
-#define TaskM_id 0
-CONST(TaskType, AUTOMATIC) TaskM = TaskM_id;
-
 /* Task TaskV identifier */
-#define TaskV_id 1
+#define TaskV_id 0
 CONST(TaskType, AUTOMATIC) TaskV = TaskV_id;
+
+/* Task TaskM identifier */
+#define TaskM_id 1
+CONST(TaskType, AUTOMATIC) TaskM = TaskM_id;
 
 /* Task TaskC identifier */
 #define TaskC_id 2
@@ -336,107 +336,6 @@ VAR(tpl_proc, OS_VAR) IDLE_TASK_task_desc = {
  * Definition and initialization of Task related defines and structures
  */
 /*-----------------------------------------------------------------------------
- * Task TaskM descriptor
- */
-#define APP_Task_TaskM_START_SEC_CODE
-
-#include "tpl_memmap.h"
-/*
- * Task TaskM function prototype
- */
-
-FUNC(void, OS_APPL_CODE) TaskM_function(void);
-#define APP_Task_TaskM_STOP_SEC_CODE
-
-#include "tpl_memmap.h"
-
-/*-----------------------------------------------------------------------------
- * Target specific structures
- */
-
-/*
- * Task TaskM stack
- *
- */
-#define APP_Task_TaskM_START_SEC_STACK
-#include "tpl_memmap.h"
-tpl_stack_word TaskM_stack_zone[256/sizeof(tpl_stack_word)];
-#define APP_Task_TaskM_STOP_SEC_STACK
-#include "tpl_memmap.h"
-
-#define OS_START_SEC_VAR_UNSPECIFIED
-#include "tpl_memmap.h"
-
-#define TaskM_STACK { TaskM_stack_zone, 256 }
-
-/*
- * Task TaskM context
- */
-avr_context TaskM_int_context;
-#define TaskM_CONTEXT &TaskM_int_context
-
-#define OS_STOP_SEC_VAR_UNSPECIFIED
-#include "tpl_memmap.h"
-
-
-
-
-/*
-  No timing protection
- */
-
-#define OS_START_SEC_CONST_UNSPECIFIED
-#include "tpl_memmap.h"
-
-
-/*
- * Static descriptor of task TaskM
- */
-CONST(tpl_proc_static, OS_CONST) TaskM_task_stat_desc = {
-  /* context                  */  TaskM_CONTEXT,
-  /* stack                    */  TaskM_STACK,
-  /* entry point (function)   */  TaskM_function,
-  /* internal ressource       */  NULL,
-  /* task id                  */  TaskM_id,
-#if WITH_OSAPPLICATION == YES
-  /* OS application id        */  
-#endif
-  /* task base priority       */  1,
-  /* max activation count     */  1,
-  /* task type                */  TASK_BASIC,
-#if WITH_AUTOSAR_TIMING_PROTECTION == YES
-
-  /* execution budget */        0,
-  /* timeframe        */        0, 
-  /* pointer to the timing
-     protection descriptor    */ NULL
-
-#endif
-};
-
-#define OS_STOP_SEC_CONST_UNSPECIFIED
-#include "tpl_memmap.h"
-
-
-#define OS_START_SEC_VAR_UNSPECIFIED
-#include "tpl_memmap.h"
-/*
- * Dynamic descriptor of task TaskM
- */
-VAR(tpl_proc, OS_VAR) TaskM_task_desc = {
-  /* resources                      */  NULL,
-#if WITH_OSAPPLICATION == YES
-  /* if > 0 the process is trusted  */  0,    
-#endif /* WITH_OSAPPLICATION */
-  /* activate count                 */  0,
-  /* task priority                  */  1,
-  /* task state                     */  AUTOSTART
-};
-
-#define OS_STOP_SEC_VAR_UNSPECIFIED
-#include "tpl_memmap.h"
-
-/*-----------------------------------------------------------------------------
  * Task TaskV descriptor
  */
 #define APP_Task_TaskV_START_SEC_CODE
@@ -502,7 +401,7 @@ CONST(tpl_proc_static, OS_CONST) TaskV_task_stat_desc = {
 #if WITH_OSAPPLICATION == YES
   /* OS application id        */  
 #endif
-  /* task base priority       */  2,
+  /* task base priority       */  1,
   /* max activation count     */  1,
   /* task type                */  TASK_BASIC,
 #if WITH_AUTOSAR_TIMING_PROTECTION == YES
@@ -525,6 +424,107 @@ CONST(tpl_proc_static, OS_CONST) TaskV_task_stat_desc = {
  * Dynamic descriptor of task TaskV
  */
 VAR(tpl_proc, OS_VAR) TaskV_task_desc = {
+  /* resources                      */  NULL,
+#if WITH_OSAPPLICATION == YES
+  /* if > 0 the process is trusted  */  0,    
+#endif /* WITH_OSAPPLICATION */
+  /* activate count                 */  0,
+  /* task priority                  */  1,
+  /* task state                     */  SUSPENDED
+};
+
+#define OS_STOP_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
+ * Task TaskM descriptor
+ */
+#define APP_Task_TaskM_START_SEC_CODE
+
+#include "tpl_memmap.h"
+/*
+ * Task TaskM function prototype
+ */
+
+FUNC(void, OS_APPL_CODE) TaskM_function(void);
+#define APP_Task_TaskM_STOP_SEC_CODE
+
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
+ * Target specific structures
+ */
+
+/*
+ * Task TaskM stack
+ *
+ */
+#define APP_Task_TaskM_START_SEC_STACK
+#include "tpl_memmap.h"
+tpl_stack_word TaskM_stack_zone[256/sizeof(tpl_stack_word)];
+#define APP_Task_TaskM_STOP_SEC_STACK
+#include "tpl_memmap.h"
+
+#define OS_START_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+#define TaskM_STACK { TaskM_stack_zone, 256 }
+
+/*
+ * Task TaskM context
+ */
+avr_context TaskM_int_context;
+#define TaskM_CONTEXT &TaskM_int_context
+
+#define OS_STOP_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+
+
+
+/*
+  No timing protection
+ */
+
+#define OS_START_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+
+/*
+ * Static descriptor of task TaskM
+ */
+CONST(tpl_proc_static, OS_CONST) TaskM_task_stat_desc = {
+  /* context                  */  TaskM_CONTEXT,
+  /* stack                    */  TaskM_STACK,
+  /* entry point (function)   */  TaskM_function,
+  /* internal ressource       */  NULL,
+  /* task id                  */  TaskM_id,
+#if WITH_OSAPPLICATION == YES
+  /* OS application id        */  
+#endif
+  /* task base priority       */  2,
+  /* max activation count     */  1,
+  /* task type                */  TASK_BASIC,
+#if WITH_AUTOSAR_TIMING_PROTECTION == YES
+
+  /* execution budget */        0,
+  /* timeframe        */        0, 
+  /* pointer to the timing
+     protection descriptor    */ NULL
+
+#endif
+};
+
+#define OS_STOP_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+
+#define OS_START_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+/*
+ * Dynamic descriptor of task TaskM
+ */
+VAR(tpl_proc, OS_VAR) TaskM_task_desc = {
   /* resources                      */  NULL,
 #if WITH_OSAPPLICATION == YES
   /* if > 0 the process is trusted  */  0,    
@@ -657,16 +657,16 @@ FUNC(void, OS_CODE) tpl_avr_ISR2_handler(CONST(uint16, AUTOMATIC) id);
  */
 CONSTP2CONST(tpl_proc_static, AUTOMATIC, OS_APPL_DATA)
 tpl_stat_proc_table[TASK_COUNT+ISR_COUNT+1] = {
-  &TaskM_task_stat_desc,
   &TaskV_task_stat_desc,
+  &TaskM_task_stat_desc,
   &TaskC_task_stat_desc,
   &IDLE_TASK_task_stat_desc
 };
 
 CONSTP2VAR(tpl_proc, AUTOMATIC, OS_APPL_DATA)
 tpl_dyn_proc_table[TASK_COUNT+ISR_COUNT+1] = {
-  &TaskM_task_desc,
   &TaskV_task_desc,
+  &TaskM_task_desc,
   &TaskC_task_desc,
   &IDLE_TASK_task_desc
 };
@@ -1094,8 +1094,8 @@ VAR(tpl_kern_state, OS_VAR) tpl_kern =
 #include "tpl_memmap.h"
 CONSTP2CONST(char, AUTOMATIC, OS_APPL_DATA) proc_name_table[TASK_COUNT + ISR_COUNT + 1] = {
 
-  "TaskM",
   "TaskV",
+  "TaskM",
   "TaskC",
   "*idle*"
 };

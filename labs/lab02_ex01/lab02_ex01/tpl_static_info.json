@@ -127,29 +127,16 @@
     
     {
       "ACTIVATION" : 1,
-      "AUTOSTART" : "true",
-      "AUTOSTART_S" : 
-      {
-        "APPMODE" : 
-        [
-          
-          {
-            "VALUE" : "stdAppmode"
-          }
-        ]
-      },
+      "AUTOSTART" : "false",
       "KIND" : "Task",
       "MESSAGE" : 
       [
         
         {
-          "VALUE" : "msgM_receive"
-        },        
-        {
-          "VALUE" : "msgM_send"
+          "VALUE" : "msgV_receive"
         }
       ],
-      "NAME" : "TaskM",
+      "NAME" : "TaskV",
       "NONPREEMPTABLE" : "false",
       "PRIORITY" : 1,
       "SCHEDULE" : "FULL",
@@ -174,10 +161,13 @@
       [
         
         {
-          "VALUE" : "msgV_receive"
+          "VALUE" : "msgM_receive"
+        },        
+        {
+          "VALUE" : "msgM_send"
         }
       ],
-      "NAME" : "TaskV",
+      "NAME" : "TaskM",
       "NONPREEMPTABLE" : "false",
       "PRIORITY" : 2,
       "SCHEDULE" : "FULL",

@@ -1,11 +1,6 @@
 #include <stdio.h>
 #include "Arduino.h"
 #include "tpl_os.h"
-// #include <math.h>
-// #include <unistd.h>
-// #include <sys/time.h>
-// #include "tpl_com.h"
-// #include "tpl_posixvp_irq_gen.h"
 
 
 void setup()
@@ -14,8 +9,7 @@ void setup()
     pinMode(A0, INPUT);
     pinMode(12, INPUT_PULLUP);	//enable the internal pull-up resistor
     pinMode(13, OUTPUT);
-
-	Serial.begin(115200);
+	Serial.begin(9600);			//JUST FOR DEBBUGING
 }
 
 
@@ -26,25 +20,6 @@ DeclareMessage(msgC_send);
 DeclareMessage(msgM_receive);
 DeclareMessage(msgM_send);
 DeclareMessage(msgV_receive);
-
-
-// int bin_to_dec(unsigned int binary){
-// 	//auxiliary function to convert binary values to decimal
-// 	int i = 0;
-// 	int decimal = 0;
-// 	int bit;
-// 	int weight = 1;
-
-// 	while (binary != 0){
-// 		bit = binary % 10;
-// 		decimal += bit*weight;
-// 		weight *= 2;
-// 		binary /= 10;
-// 		i++;
-// 	}
-
-// 	return decimal;
-// }
 
 
 TASK(TaskC)
@@ -118,21 +93,6 @@ TASK(TaskM)
 	}
 	SendMessage(msgM_send, &msgM);
 
-
-
-	// Serial.print("S_state:");
-	// Serial.println(S_state);
-	// Serial.print("A0_val:");
-	// Serial.println(A0_val);
-	// Serial.print("R:");
-	// Serial.println(R);
-	// Serial.print("X:");
-	// Serial.println(X);
-	// Serial.print("msgM:");
-	// Serial.println(msgM);
-	// Serial.print("------------------\n");
-
-
 	TerminateTask();
 }
 
@@ -166,90 +126,3 @@ TASK(TaskV)
 
 	TerminateTask();
 }
-
-
-
-
-
-
-
-// #define	DELAY	2000000
-
-// int num=0;	
-
-// void wait_a_lot( long int t )
-// {
-// 	struct timeval start, end;
-// 	gettimeofday(&start, NULL);
-
-// 	do {
-// 		gettimeofday(&end, NULL);
-// 	} while( ((end.tv_sec * 1000000 + end.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec)) < t );
-// }
-
-// int main(void)
-// {
-// 	fflush( stdout );
-// 	StartOS(OSDEFAULTAPPMODE);
-// 	return 0;
-// }
-
-// DeclareAlarm(one_sec_producer);
-// DeclareTask(Producer);
-// DeclareTask(Consumer);
-// DeclareTask(Threshold);
-// DeclareMessage(from_producer);
-// DeclareMessage(consumer_receive);
-// DeclareResource(sem);
-
-// TASK(Producer)
-// {
-// 	static int i=0;
-
-// 	if( SendMessage(from_producer, &i) != E_OK ) {
-// 		printf( "Producer: error sending data\n\r");
-// 	} else {
-// 		GetResource(sem);
-// 		num++;
-// 		printf ("Producer: inserted %d \t\t %d elements in the buffer\n\r", i, num);
-// 		fflush( stdout );
-// 		ReleaseResource(sem);
-
-// 		i++;
-// 	}
-// 	TerminateTask();
-// }
-
-// TASK(Consumer)
-// {
-// 	int	i;
-
-// 	if( ReceiveMessage(consumer_receive, &i) == E_COM_LIMIT ) {
-// 		printf( "Consumer: at least one message is lost\n\r" );
-// 	}
-// 	wait_a_lot(DELAY);
-
-// 	GetResource(sem);
-// 	num--;
-// 	printf ("Consumer: consumed value %d \t %d elements in the buffer\n\r", i, num);
-// 	fflush( stdout );
-// 	ReleaseResource(sem);
-
-// 	wait_a_lot(DELAY);
-
-// 	TerminateTask();
-// }
-
-// TASK(Threshold)
-// {
-// 	int	i;
-
-// 	if( ReceiveMessage(threshold_receive, &i) != E_OK ) {
-// 		printf( "Threshold: receive error\n\r" );
-// 		fflush(stdout);
-// 	} else {
-// 		printf( "Threshold: received data %d\n\r", i );
-// 		fflush(stdout);
-// 	}
-// 	TerminateTask();
-// }
