@@ -68,7 +68,6 @@ TASK(TaskM)
 
 	//Decode A0 value from message
 	A0_val = msgC & 0x03FF;
-	//A0_dec = bin_to_dec(A0_bin);
 
 	//Update reference value
 	if (S_state){
