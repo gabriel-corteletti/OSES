@@ -73,28 +73,32 @@
   "event" : [],
   "ioc" : [],
   "isr" : [],
-  "message" : [],
-  "resource" : 
+  "message" : 
   [
     
     {
-      "ISRUSAGE" : [],
-      "KIND" : "Resource",
-      "NAME" : "Sem",
-      "PRIORITY" : 4,
-      "RESOURCEPROPERTY" : "STANDARD",
-      "TASKUSAGE" : 
-      [
-        
-        {
-          "VALUE" : "TaskA"
-        },        
-        {
-          "VALUE" : "TaskC"
-        }
-      ]
+      "MESSAGEPROPERTY" : "RECEIVE_QUEUED_INTERNAL",
+      "MESSAGEPROPERTY_S" : 
+      {
+        "QUEUESIZE" : 1,
+        "SENDINGMESSAGE" : "msg_send"
+      },
+      "NAME" : "msg_receive",
+      "NOTIFICATION" : "NONE",
+      "NOTIFICATIONERROR" : "NONE"
+    },    
+    {
+      "MESSAGEPROPERTY" : "SEND_STATIC_INTERNAL",
+      "MESSAGEPROPERTY_S" : 
+      {
+        "CDATATYPE" : "bool"
+      },
+      "NAME" : "msg_send",
+      "NOTIFICATION" : "NONE",
+      "NOTIFICATIONERROR" : "NONE"
     }
   ],
+  "resource" : [],
   "task" : 
   [
     
@@ -112,16 +116,16 @@
         ]
       },
       "KIND" : "Task",
-      "NAME" : "TaskC",
-      "NONPREEMPTABLE" : "false",
-      "PRIORITY" : 1,
-      "RESOURCE" : 
+      "MESSAGE" : 
       [
         
         {
-          "VALUE" : "Sem"
+          "VALUE" : "msg_receive"
         }
       ],
+      "NAME" : "TaskC",
+      "NONPREEMPTABLE" : "false",
+      "PRIORITY" : 1,
       "SCHEDULE" : "FULL",
       "STACKSIZE" : 256,
       "USEINTERNALRESOURCE" : "false"
@@ -161,16 +165,44 @@
         ]
       },
       "KIND" : "Task",
-      "NAME" : "TaskA",
-      "NONPREEMPTABLE" : "false",
-      "PRIORITY" : 3,
-      "RESOURCE" : 
+      "MESSAGE" : 
       [
         
         {
-          "VALUE" : "Sem"
+          "VALUE" : "msg_receive"
         }
       ],
+      "NAME" : "TaskA",
+      "NONPREEMPTABLE" : "false",
+      "PRIORITY" : 3,
+      "SCHEDULE" : "FULL",
+      "STACKSIZE" : 256,
+      "USEINTERNALRESOURCE" : "false"
+    },    
+    {
+      "ACTIVATION" : 1,
+      "AUTOSTART" : "true",
+      "AUTOSTART_S" : 
+      {
+        "APPMODE" : 
+        [
+          
+          {
+            "VALUE" : "stdAppmode"
+          }
+        ]
+      },
+      "KIND" : "Task",
+      "MESSAGE" : 
+      [
+        
+        {
+          "VALUE" : "msg_send"
+        }
+      ],
+      "NAME" : "TaskINIT",
+      "NONPREEMPTABLE" : "false",
+      "PRIORITY" : 4,
       "SCHEDULE" : "FULL",
       "STACKSIZE" : 256,
       "USEINTERNALRESOURCE" : "false"

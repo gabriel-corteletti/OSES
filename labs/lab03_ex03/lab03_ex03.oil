@@ -11,11 +11,11 @@ IMPLEMENTATION trampoline {
 
 CPU RM_scheduler {
     OS config {
-        STATUS = STANDARD;
+        STATUS = EXTENDED;
         BUILD = TRUE {
             TRAMPOLINE_BASE_PATH = "../..";
-            APP_NAME = "lab03_ex01_exe";
-            APP_SRC = "lab03_ex01.cpp";
+            APP_NAME = "lab03_ex03_exe";
+            APP_SRC = "lab03_ex03.cpp";
             CPPCOMPILER = "avr-g++";
             COMPILER = "avr-gcc";
             LINKER = "avr-gcc";
@@ -51,13 +51,38 @@ CPU RM_scheduler {
     };
 
 
+    /************* MESSAGES DEFINITION *************/
+
+    MESSAGE msg_send {
+        MESSAGEPROPERTY = SEND_STATIC_INTERNAL{
+            CDATATYPE = "bool";
+        };
+    };
+
+    MESSAGE msg_receive {
+        MESSAGEPROPERTY = RECEIVE_QUEUED_INTERNAL{
+            SENDINGMESSAGE = msg_send;
+            QUEUESIZE = 1;
+        };
+    };
+
+
     /************* TASKS DEFINITION *************/
+
+    TASK TaskINIT {
+        PRIORITY = 4;
+        AUTOSTART = TRUE { APPMODE = stdAppmode; };
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+        MESSAGE = msg_send;
+    };
 
     TASK TaskA {
         PRIORITY = 3;
         AUTOSTART = TRUE { APPMODE = stdAppmode; };
         ACTIVATION = 1;
         SCHEDULE = FULL;
+        MESSAGE = msg_receive;
     };
 
     TASK TaskB {
@@ -72,5 +97,6 @@ CPU RM_scheduler {
         AUTOSTART = TRUE { APPMODE = stdAppmode; };
         ACTIVATION = 1;
         SCHEDULE = FULL;
+        MESSAGE = msg_receive;
     };
 };

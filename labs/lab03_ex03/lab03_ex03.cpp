@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "Arduino.h"
 #include "tpl_os.h"
+#include "tpl_com.h"
+#include <stdbool.h>
 
 
 void setup()
@@ -12,7 +14,9 @@ void setup()
 DeclareTask(TaskA);
 DeclareTask(TaskB);
 DeclareTask(TaskC);
-DeclareResource(Sem);
+DeclareTask(TaskINIT);
+DeclareMessage(msg_send);
+DeclareMessage(msg_receive);
 
 
 void do_things(int ms)
@@ -23,10 +27,26 @@ void do_things(int ms)
 }
 
 
+TASK(TaskINIT){
+    static bool msg = true;
+    
+    Serial.print("--> Initialization task begun: ");
+    Serial.println(millis());
+
+    SendMessage(msg_send, &msg);
+
+    Serial.print("--> Initial message sent and task ended: ");
+    Serial.println(millis());
+
+    TerminateTask();
+}
+
+
 TASK(TaskA)
 {
     static unsigned int count_A = 0;
     static unsigned long A_ready;
+    bool msg;
     static unsigned long A_finish;
     static unsigned long A_CS_start;
     static unsigned long A_CS_finish;
@@ -36,9 +56,11 @@ TASK(TaskA)
     Serial.print(++count_A);
     Serial.print(" ready: ");
     Serial.println(A_ready);
-
-    GetResource(Sem);
     
+    while(ReceiveMessage(msg_receive, &msg) == E_COM_NOMSG){
+        Serial.println("TaskA hasn't receive a message yet");
+    }
+
     Serial.print("  --C.S. of A");
     Serial.print(count_A);
     Serial.print(" begun: ");
@@ -53,7 +75,8 @@ TASK(TaskA)
     A_CS_finish = millis();
     Serial.println(A_CS_finish);
 
-    ReleaseResource(Sem);
+    msg = true;
+    SendMessage(msg_send, &msg);
     
     Serial.print("A");
     Serial.print(count_A);
@@ -93,6 +116,7 @@ TASK(TaskC)
 {
     static unsigned int count_C = 0;
     static unsigned long C_ready;
+    bool msg;
     static unsigned long C_finish;
     static unsigned long C_CS_start;
     static unsigned long C_CS_finish;
@@ -105,8 +129,10 @@ TASK(TaskC)
 
     do_things(200);
 
-    GetResource(Sem);
-    
+    while(ReceiveMessage(msg_receive, &msg) == E_COM_NOMSG){
+        Serial.println("TaskC hasn't receive a message yet");
+    }
+
     Serial.print("  --C.S. of C");
     Serial.print(count_C);
     Serial.print(" begun: ");
@@ -121,7 +147,8 @@ TASK(TaskC)
     C_CS_finish = millis();
     Serial.println(C_CS_finish);
 
-    ReleaseResource(Sem);
+    msg = true;
+    SendMessage(msg_send, &msg);
     
     Serial.print("C");
     Serial.print(count_C);

@@ -4,30 +4,30 @@ OIL_VERSION = "2.5";
 IMPLEMENTATION trampoline {
 	//Fix the default STACKSIZE of tasks
 	TASK {
-    UINT32 STACKSIZE = 256;
+        UINT32 STACKSIZE = 256;
 	};
 };
 
 
 CPU RM_scheduler {
-  OS config {
-    STATUS = STANDARD;
-    BUILD = TRUE {
-      TRAMPOLINE_BASE_PATH = "../..";
-      APP_NAME = "lab03_ex02_exe";
-      APP_SRC = "lab03_ex02.cpp";
-      CPPCOMPILER = "avr-g++";
-      COMPILER = "avr-gcc";
-      LINKER = "avr-gcc";
-      ASSEMBLER = "avr-gcc";
-      COPIER = "avr-objcopy";
-      SYSTEM = PYTHON;
-      LIBRARY = serial;
+    OS config {
+        STATUS = EXTENDED;
+        BUILD = TRUE {
+            TRAMPOLINE_BASE_PATH = "../..";
+            APP_NAME = "lab03_ex02_exe";
+            APP_SRC = "lab03_ex02.cpp";
+            CPPCOMPILER = "avr-g++";
+            COMPILER = "avr-gcc";
+            LINKER = "avr-gcc";
+            ASSEMBLER = "avr-gcc";
+            COPIER = "avr-objcopy";
+            SYSTEM = PYTHON;
+            LIBRARY = serial;
+        };
+        SYSTEM_CALL = TRUE;
     };
-    SYSTEM_CALL = TRUE;
-  };
  
-  APPMODE stdAppmode {};
+    APPMODE stdAppmode {};
   
 
     /************* ALARMS DEFINITION *************/
@@ -41,7 +41,7 @@ CPU RM_scheduler {
     ALARM alarmB {              //every 2000ms
         COUNTER = SystemCounter;
         ACTION = ACTIVATETASK { TASK = TaskB; };
-        AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 1954; CYCLETIME = 1954; };
+        AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 1953; CYCLETIME = 1953; };
     };
 
     ALARM alarmC {               //every 3000ms
@@ -56,7 +56,6 @@ CPU RM_scheduler {
     RESOURCE Sem {
         RESOURCEPROPERTY = STANDARD;
     };
-
 
     /************* TASKS DEFINITION *************/
 

@@ -793,8 +793,8 @@ VAR(tpl_time_obj, OS_VAR) alarmB_alarm_desc = {
     /* pointer to the static part   */  (tpl_time_obj_static *)&alarmB_static,
     /* next alarm                   */  NULL,
     /* prev alarm                   */  NULL,
-    /* cycle                        */  1954,
-    /* date                         */  1954,
+    /* cycle                        */  1953,
+    /* date                         */  1953,
     /* State of the alarm           */  ALARM_AUTOSTART
 };
 

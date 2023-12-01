@@ -2,8 +2,6 @@
 #include "Arduino.h"
 #include "tpl_os.h"
 
-// ../../goil/makefile-unix/goil --target=avr/arduino/uno --templates=../../goil/templates/ lab03_ex01.oil
-
 
 void setup()
 {
@@ -26,20 +24,36 @@ void do_things(int ms)
 
 TASK(TaskA)
 {
-    static unsigned int count_A = 1;
-    static unsigned long A_end;
+    static unsigned int count_A = 0;
+    static unsigned long A_ready;
+    static unsigned long A_finish;
+    static unsigned long A_WCRT = 0;
+    static unsigned long A_RT;
 
-    Serial.print("Task A");
-    Serial.print(count_A);
-    Serial.println(" begun");
+    A_ready = 1200*count_A;
+    Serial.print("A");
+    Serial.print(++count_A);
+    Serial.print(" ready: ");
+    Serial.println(A_ready);
 
     do_things(200);
     
-    Serial.print("Task A");
-    Serial.print(count_A++);
-    Serial.print(" finished: ");
-    A_end = millis();
-    Serial.println(A_end);
+    Serial.print("A");
+    Serial.print(count_A);
+    Serial.print(" ended: ");
+    A_finish = millis();
+    Serial.print(A_finish);
+    Serial.print(" -> RT: ");
+    A_RT = A_finish - A_ready;
+    Serial.print(A_RT);
+
+    if (A_RT > A_WCRT){
+        A_WCRT = A_RT;
+        Serial.println(" <<< new A-WCRT");
+    }
+    else {
+        Serial.println();
+    }
 
     TerminateTask();
 }
@@ -47,20 +61,36 @@ TASK(TaskA)
 
 TASK(TaskB)
 {
-    static unsigned int count_B = 1;
-    static unsigned long B_end;
+    static unsigned int count_B = 0;
+    static unsigned long B_ready;
+    static unsigned long B_finish;
+    static unsigned long B_WCRT = 0;
+    static unsigned long B_RT;
 
-    Serial.print("Task B");
-    Serial.print(count_B);
-    Serial.println(" begun");
+    B_ready = 2000*count_B;
+    Serial.print("B");
+    Serial.print(++count_B);
+    Serial.print(" ready: ");
+    Serial.println(B_ready);
 
     do_things(600);
     
-    Serial.print("Task B");
-    Serial.print(count_B++);
-    Serial.print(" finished: ");
-    B_end = millis();
-    Serial.println(B_end);
+    Serial.print("B");
+    Serial.print(count_B);
+    Serial.print(" ended: ");
+    B_finish = millis();
+    Serial.print(B_finish);
+    Serial.print(" -> RT: ");
+    B_RT = B_finish - B_ready;
+    Serial.print(B_RT);
+
+    if (B_RT > B_WCRT){
+        B_WCRT = B_RT;
+        Serial.println(" <<< new B-WCRT");
+    }
+    else {
+        Serial.println();
+    }
 
     TerminateTask();
 }
@@ -68,20 +98,36 @@ TASK(TaskB)
 
 TASK(TaskC)
 {
-    static unsigned int count_C = 1;
-    static unsigned long C_end;
+    static unsigned int count_C = 0;
+    static unsigned long C_ready;
+    static unsigned long C_finish;
+    static unsigned long C_WCRT = 0;
+    static unsigned long C_RT;
 
-    Serial.print("Task C");
-    Serial.print(count_C);
-    Serial.println(" begun");
+    C_ready = 3000*count_C;
+    Serial.print("C");
+    Serial.print(++count_C);
+    Serial.print(" ready: ");
+    Serial.println(C_ready);
 
     do_things(300);
+    
+    Serial.print("C");
+    Serial.print(count_C);
+    Serial.print(" ended: ");
+    C_finish = millis();
+    Serial.print(C_finish);
+    Serial.print(" -> RT: ");
+    C_RT = C_finish - C_ready;
+    Serial.print(C_RT);
 
-    Serial.print("Task C");
-    Serial.print(count_C++);
-    Serial.print(" finished: ");
-    C_end = millis();
-    Serial.println(C_end);
+    if (C_RT > C_WCRT){
+        C_WCRT = C_RT;
+        Serial.println(" <<< new C-WCRT");
+    }
+    else {
+        Serial.println();
+    }
 
     TerminateTask();
 }

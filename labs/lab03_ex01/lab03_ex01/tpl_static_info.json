@@ -34,7 +34,7 @@
       "AUTOSTART" : "true",
       "AUTOSTART_S" : 
       {
-        "ALARMTIME" : 1954,
+        "ALARMTIME" : 1953,
         "APPMODE" : 
         [
           
@@ -42,7 +42,7 @@
             "VALUE" : "stdAppmode"
           }
         ],
-        "CYCLETIME" : 1954
+        "CYCLETIME" : 1953
       },
       "COUNTER" : "SystemCounter",
       "NAME" : "alarmB"
