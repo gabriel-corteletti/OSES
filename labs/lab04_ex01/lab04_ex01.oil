@@ -1,0 +1,89 @@
+OIL_VERSION = "2.5";
+
+
+IMPLEMENTATION trampoline {
+	//Fix the default STACKSIZE of tasks
+	TASK {
+        UINT32 STACKSIZE = 256;
+	};
+};
+
+
+CPU RM_scheduler {
+    OS config {
+        STATUS = EXTENDED;
+        BUILD = TRUE {
+            TRAMPOLINE_BASE_PATH = "../..";
+            APP_NAME = "lab04_ex01_exe";
+            APP_SRC = "lab04_ex01.cpp";
+            CPPCOMPILER = "avr-g++";
+            COMPILER = "avr-gcc";
+            LINKER = "avr-gcc";
+            ASSEMBLER = "avr-gcc";
+            COPIER = "avr-objcopy";
+            SYSTEM = PYTHON;
+            LIBRARY = serial;
+        };
+        SYSTEM_CALL = TRUE;
+    };
+ 
+    APPMODE stdAppmode {};
+  
+
+    /************* ALARMS DEFINITION *************/
+
+    ALARM alarmS {              //every 100ms
+        COUNTER = SystemCounter;
+        ACTION = ACTIVATETASK { TASK = TaskS; };
+        AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 98; CYCLETIME = 98; };
+    };
+  
+    ALARM alarmB {              //every 500ms
+        COUNTER = SystemCounter;
+        ACTION = ACTIVATETASK { TASK = TaskB; };
+        AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 488; CYCLETIME = 488; };
+    };
+
+    ALARM alarmV {               //every 125ms
+        COUNTER = SystemCounter;
+        ACTION = ACTIVATETASK { TASK = TaskV; };
+        AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 122; CYCLETIME = 122; };
+    };
+
+
+    /************* RESOURCE DEFINITION *************/
+
+    RESOURCE Sem {
+        RESOURCEPROPERTY = STANDARD;
+    };
+
+
+    /************* TASKS DEFINITION *************/
+
+
+
+    /////////////// CHECK PRIORITIES /////////////
+
+    TASK TaskS {
+        PRIORITY = 3;
+        AUTOSTART = TRUE { APPMODE = stdAppmode; };
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+        RESOURCE = Sem;
+    };
+
+    TASK TaskB {
+        PRIORITY = 2;
+        AUTOSTART = FALSE;
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+        RESOURCE = Sem;
+    };
+
+    TASK TaskV {
+        PRIORITY = 1;
+        AUTOSTART = TRUE { APPMODE = stdAppmode; };
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+    };
+};
