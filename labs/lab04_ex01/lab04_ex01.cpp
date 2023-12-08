@@ -65,13 +65,6 @@ TASK (TaskS){
         Serial.print(add);
         Serial.print(" -> amount: ");
 
-
-
-
-
-        add = (add+1)%K;    //circular buffer: 0 <= add <= K-1
-
-
         
 
         num++;              //Increment amount of data
@@ -81,6 +74,9 @@ TASK (TaskS){
 
         //Critical Section ends
         ReleaseResource(Sem);
+
+
+        add = (add+1)%K;    //circular buffer: 0 <= add <= K-1
     }
 
 
@@ -117,11 +113,11 @@ TASK (TaskB){
             }
 
 
-            // Serial.print("\t\t\tRemoved ");
-            // Serial.print(Q[rem]);
-            // Serial.print(" in position ");
-            // Serial.print(rem);
-            Serial.print("\t\t\tRem -> amount: ");
+            Serial.print("\t\t\tRemoved ");
+            Serial.print(Q[rem]);
+            Serial.print(" in position ");
+            Serial.print(rem);
+            Serial.print(" -> amount: ");
 
 
             rem = (rem+1)%K;    //circular buffer: 0 <= rem <= K-1
