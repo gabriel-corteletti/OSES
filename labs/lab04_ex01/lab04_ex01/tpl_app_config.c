@@ -54,7 +54,7 @@ CONST(tpl_application_mode, OS_CONST) stdAppmode = 0; /* mask = 1 */
 CONST(tpl_application_mode, OS_CONST) OSDEFAULTAPPMODE = 0;
 CONST(tpl_appmode_mask, OS_CONST) tpl_task_app_mode[TASK_COUNT] = {
   1 /* task TaskV : stdAppmode */ ,
-  1 /* task TaskB : stdAppmode */ ,
+  0 /* task TaskB :  */ ,
   1 /* task TaskS : stdAppmode */ 
 };
 
@@ -539,7 +539,7 @@ VAR(tpl_proc, OS_VAR) TaskB_task_desc = {
 #endif /* WITH_OSAPPLICATION */
   /* activate count                 */  0,
   /* task priority                  */  2,
-  /* task state                     */  AUTOSTART
+  /* task state                     */  SUSPENDED
 };
 
 #define OS_STOP_SEC_VAR_UNSPECIFIED

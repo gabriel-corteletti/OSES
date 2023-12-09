@@ -8,8 +8,8 @@
 
 //Global variables
 int Q[K];       //shared queue
-int error;
-int alarm;
+int error = 0;
+int alarm = 0;
 int add = 0;    //position to add next element
 int rem = 0;    //position to remove next element
 int num = 0;
@@ -32,20 +32,8 @@ DeclareResource(Sem);
 TASK (TaskS){
     static int X;
 
-    // char test[] = "Hello";
-    // char test2[] = String(10);
-    // char msg[20];
-    // strcpy(msg,test);
-    // strcat(msg,test2);
-    // Serial.println(msg);
-
-
-
-
-
     //Get analog value of voltage source
-    //X = analogRead(A0);
-    X++;
+    X = analogRead(A0);
 
     //Checks error
     if(X<10 || X>1013){
@@ -65,18 +53,10 @@ TASK (TaskS){
 
         Q[add] = X;         //Inserts new X in Q
 
-
-        // char msg[64];
-        // sprintf(msg, "S: New X = %d -> err: %d",X,error);
-        // Serial.println(msg);
-
-
-
-        Serial.print("S: New X = ");
-        Serial.print(X);
-        Serial.print(" -> err: ");
-        Serial.println(error);
-        // fflush(stdout);
+        //Prints new measured X
+        char msg[64];
+        sprintf(msg, "S: New X = %d -> err: %d",X,error);
+        Serial.println(msg);
 
         num++;              //Increment amount of data
 
@@ -93,10 +73,10 @@ TASK (TaskS){
 TASK (TaskB){
     int M = -9999;   //maximum
     int N = 9999;    //minimum
-    
+
     for(int i=0; i<K; i++){     //Reads all elements in Q
         if(num>0){              //if there are any left
-         
+
             //Check if it is greater than the current maximum
             if(Q[rem] > M){
                 M = Q[rem];
@@ -107,21 +87,8 @@ TASK (TaskB){
                 N = Q[rem];
             }
 
-            
-
-            
-
             //Critical Section begins
             GetResource(Sem);
-
-            // char msg[64];
-            // sprintf(msg, "\t\tB: Offloaded %d", Q[rem]);
-            // Serial.println(msg);
-
-
-            Serial.print("\t\tB: Offloaded ");
-            Serial.println(Q[rem]);
-            // fflush(stdout);
 
             num--;              //Decrement amount of data
 
@@ -140,18 +107,10 @@ TASK (TaskB){
         alarm = 0;
     }
 
-
-
+    //Print B results
     char msg[64];
-    sprintf(msg, "\t\tB: N = %d  |  M = %d -> alarm: %d", N, M, alarm);
+    sprintf(msg, "\t\tB: N = %d  |  M = %d\n\t\t   M-N = %d -> alarm: %d", N, M, N-M, alarm);
     Serial.println(msg);
-
-    // Serial.print("\t\tTask B: N = ");
-    // Serial.print(N);
-    // Serial.print("  |  M = ");
-    // Serial.print(M);
-    // Serial.print(" -> alarm: ");
-    // Serial.println(alarm);
 
     TerminateTask();
 }
