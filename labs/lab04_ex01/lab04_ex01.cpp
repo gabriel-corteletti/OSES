@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "Arduino.h"
 #include "tpl_os.h"
+#include <string.h>
+#include <stdlib.h>
 
 #define K 5    //queue size
 
@@ -30,56 +32,59 @@ DeclareResource(Sem);
 TASK (TaskS){
     static int X;
 
-    // //Get analog value of voltage source
-    // X = analogRead(A0);
+    // char test[] = "Hello";
+    // char test2[] = String(10);
+    // char msg[20];
+    // strcpy(msg,test);
+    // strcat(msg,test2);
+    // Serial.println(msg);
 
 
+
+
+
+    //Get analog value of voltage source
+    //X = analogRead(A0);
     X++;
 
-
-    // //Checks error
-    // if(X<10 || X>1013){
-    //     error = 1;
-    // }
-    // else{
-    //     error = 0;
-    // }
+    //Checks error
+    if(X<10 || X>1013){
+        error = 1;
+    }
+    else{
+        error = 0;
+    }
 
     //Checks for overflow
     if (num >= K){
-        Serial.println("==================  Queue Overflow  ==================");
+        Serial.println("ERROR: Queue Overflow");
     }
     else{
         //Critical Section begins
         GetResource(Sem);
 
+        Q[add] = X;         //Inserts new X in Q
 
 
-        Q[add] = X;         //Inserts X in Q
+        // char msg[64];
+        // sprintf(msg, "S: New X = %d -> err: %d",X,error);
+        // Serial.println(msg);
 
 
 
-        Serial.print("Added ");
+        Serial.print("S: New X = ");
         Serial.print(X);
-        Serial.print(" in position ");
-        Serial.print(add);
-        Serial.print(" -> amount: ");
-
-        
+        Serial.print(" -> err: ");
+        Serial.println(error);
+        // fflush(stdout);
 
         num++;              //Increment amount of data
-
-        Serial.println(num);
-
 
         //Critical Section ends
         ReleaseResource(Sem);
 
-
         add = (add+1)%K;    //circular buffer: 0 <= add <= K-1
     }
-
-
 
     TerminateTask();
 }
@@ -88,20 +93,10 @@ TASK (TaskS){
 TASK (TaskB){
     int M = -9999;   //maximum
     int N = 9999;    //minimum
-
-
-
-
-
-
     
     for(int i=0; i<K; i++){     //Reads all elements in Q
         if(num>0){              //if there are any left
-
-
-
          
-
             //Check if it is greater than the current maximum
             if(Q[rem] > M){
                 M = Q[rem];
@@ -112,66 +107,75 @@ TASK (TaskB){
                 N = Q[rem];
             }
 
+            
 
-            Serial.print("\t\t\tRemoved ");
-            Serial.print(Q[rem]);
-            Serial.print(" in position ");
-            Serial.print(rem);
-            Serial.print(" -> amount: ");
-
-
-            rem = (rem+1)%K;    //circular buffer: 0 <= rem <= K-1
-
+            
 
             //Critical Section begins
             GetResource(Sem);
 
+            // char msg[64];
+            // sprintf(msg, "\t\tB: Offloaded %d", Q[rem]);
+            // Serial.println(msg);
+
+
+            Serial.print("\t\tB: Offloaded ");
+            Serial.println(Q[rem]);
+            // fflush(stdout);
+
             num--;              //Decrement amount of data
-
-
-
-
-            Serial.println(num);
 
             //Critical Section ends
             ReleaseResource(Sem);
 
-
-
-
+            rem = (rem+1)%K;    //circular buffer: 0 <= rem <= K-1
         }
     }
 
-    Serial.print("\t\t\tN: ");
-    Serial.print(N);
-    Serial.print("   |   M: ");
-    Serial.println(M);
+    //Checks alarm
+    if(M-N > 500){
+        alarm = 1;
+    }
+    else{
+        alarm = 0;
+    }
 
 
 
+    char msg[64];
+    sprintf(msg, "\t\tB: N = %d  |  M = %d -> alarm: %d", N, M, alarm);
+    Serial.println(msg);
 
-    // //Checks alarm
-    // if(M-N > 500){
-    //     alarm = 1;
-    // }
-    // else{
-    //     alarm=0;
-    // }
-
-
+    // Serial.print("\t\tTask B: N = ");
+    // Serial.print(N);
+    // Serial.print("  |  M = ");
+    // Serial.print(M);
+    // Serial.print(" -> alarm: ");
+    // Serial.println(alarm);
 
     TerminateTask();
 }
 
 
 TASK (TaskV){
+    static int led_state = 0;
+    static int countV = 0;
+
+    //Update state
+	if (error == 1){					                //fast
+		digitalWrite(13, led_state);
+		led_state = !led_state;
+	}
+	else if (error == 0 && alarm == 1 && countV >= 4){	//slowly
+		digitalWrite(13, led_state);
+		led_state = !led_state;
+		countV = 0;
+	}
+	else if (error == 0 && alarm == 0){					//OFF
+		digitalWrite(13, LOW);
+	}
+
+    countV++;
+
     TerminateTask();
 }
-
-
-
-
-
-
-
-
