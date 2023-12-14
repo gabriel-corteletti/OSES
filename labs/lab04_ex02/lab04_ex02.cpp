@@ -8,6 +8,8 @@
 int Q[K];       //shared queue
 int error = 0;
 int alarm = 0;
+int add = 0;    //position to add next element
+int rem = 0;    //position to remove next element
 int num = 0;
 
 
@@ -19,16 +21,19 @@ void setup()
 }
 
 
-DeclareTask(TaskS);
-DeclareTask(TaskB);
+DeclareTask(TaskW);
 DeclareTask(TaskV);
-DeclareResource(Sem);
 
 
-TASK (TaskS){
+TASK (TaskW){
     static int X;
-    static int add = 0;            //position to add next element
     char out_S[64];
+    int M = -9999;   //maximum
+    int N = 9999;    //minimum
+    char out_B[64];
+
+
+    /******************* TASK S *******************/
 
     //Get analog value of voltage source
     X = analogRead(A0);
@@ -48,69 +53,53 @@ TASK (TaskS){
         Serial.println("ERROR: Queue Overflow");
     }
     else{
-        //Critical Section begins
-        GetResource(Sem);
-
         Q[add] = X;                 //Inserts new X in Q
         Serial.println(out_S);      //Prints new measured X
         num++;                      //Increment amount of data
 
-        //Critical Section ends
-        ReleaseResource(Sem);
-
         add = (add+1)%K;            //circular buffer: 0 <= add <= K-1
     }
 
-    TerminateTask();
-}
 
+    /******************* TASK B *******************/
 
-TASK (TaskB){
-    static int rem = 0;         //position to remove next element
-    int M = -9999;              //maximum
-    int N = 9999;               //minimum
-    char out_B[64];
+    if (num >= K){                  //Task B only runs every 5 iterations
+        for(int i=0; i<K; i++){     //Reads all elements in Q
+            if(num>0){              //if there are any left
 
-    for(int i=0; i<K; i++){     //Reads all elements in Q
-        if(num>0){              //if there are any left
+                //Check if it is greater than the current maximum
+                if(Q[rem] > M){
+                    M = Q[rem];
+                }
 
-            //Check if it is greater than the current maximum
-            if(Q[rem] > M){
-                M = Q[rem];
+                //Check if it is smaller than the current minimum
+                if(Q[rem] < N){
+                    N = Q[rem];
+                }
+
+                num--;              //Decrement amount of data
+
+                rem = (rem+1)%K;    //circular buffer: 0 <= rem <= K-1
             }
-
-            //Check if it is smaller than the current minimum
-            if(Q[rem] < N){
-                N = Q[rem];
-            }
-
-            //Critical Section begins
-            GetResource(Sem);
-
-            num--;              //Decrement amount of data
-
-            //Critical Section ends
-            ReleaseResource(Sem);
-
-            rem = (rem+1)%K;    //circular buffer: 0 <= rem <= K-1
         }
-    }
 
-    //Checks alarm
-    if(M-N > 500){
-        alarm = 1;
-        sprintf(out_B, "\t\tB: N = %d  |  M = %d\n\t\t   M-N = %d -> ALARM", N, M, M-N);
-    }
-    else{
-        alarm = 0;
-        sprintf(out_B, "\t\tB: N = %d  |  M = %d\n\t\t   M-N = %d", N, M, M-N);
-    }
+        //Checks alarm
+        if(M-N > 500){
+            alarm = 1;
+            sprintf(out_B, "\t\tB: N = %d  |  M = %d\n\t\t   M-N = %d -> ALARM", N, M, M-N);
+        }
+        else{
+            alarm = 0;
+            sprintf(out_B, "\t\tB: N = %d  |  M = %d\n\t\t   M-N = %d", N, M, M-N);
+        }
 
-    //Print B results
-    Serial.println(out_B);
+        //Print B results
+        Serial.println(out_B);
+    }
 
     TerminateTask();
 }
+
 
 
 TASK (TaskV){

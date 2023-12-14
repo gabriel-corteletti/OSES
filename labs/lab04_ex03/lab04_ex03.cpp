@@ -9,13 +9,13 @@ IMPLEMENTATION trampoline {
 };
 
 
-CPU SBV_scheduler {
+CPU RM_scheduler {
     OS config {
         STATUS = EXTENDED;
         BUILD = TRUE {
             TRAMPOLINE_BASE_PATH = "../..";
-            APP_NAME = "lab04_ex01_exe";
-            APP_SRC = "lab04_ex01.cpp";
+            APP_NAME = "lab04_ex02_exe";
+            APP_SRC = "lab04_ex02.cpp";
             CPPCOMPILER = "avr-g++";
             COMPILER = "avr-gcc";
             LINKER = "avr-gcc";
@@ -32,16 +32,10 @@ CPU SBV_scheduler {
 
     /************* ALARMS DEFINITION *************/
 
-    ALARM alarmS {              //every 100ms
+    ALARM alarmW {              //every 100ms
         COUNTER = SystemCounter;
-        ACTION = ACTIVATETASK { TASK = TaskS; };
+        ACTION = ACTIVATETASK { TASK = TaskW; };
         AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 98; CYCLETIME = 98; };
-    };
-  
-    ALARM alarmB {              //every 500ms
-        COUNTER = SystemCounter;
-        ACTION = ACTIVATETASK { TASK = TaskB; };
-        AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 488; CYCLETIME = 488; };
     };
 
     ALARM alarmV {               //every 125ms
@@ -51,33 +45,13 @@ CPU SBV_scheduler {
     };
 
 
-    /************* RESOURCE DEFINITION *************/
-
-    RESOURCE Sem {
-        RESOURCEPROPERTY = STANDARD;
-    };
-
-
     /************* TASKS DEFINITION *************/
 
-
-
-    /////////////// CHECK PRIORITIES /////////////
-
-    TASK TaskS {
-        PRIORITY = 3;
+    TASK TaskW {
+        PRIORITY = 2;
         AUTOSTART = TRUE { APPMODE = stdAppmode; };
         ACTIVATION = 1;
         SCHEDULE = FULL;
-        RESOURCE = Sem;
-    };
-
-    TASK TaskB {
-        PRIORITY = 2;
-        AUTOSTART = FALSE;
-        ACTIVATION = 1;
-        SCHEDULE = FULL;
-        RESOURCE = Sem;
     };
 
     TASK TaskV {
