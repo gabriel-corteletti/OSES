@@ -8,7 +8,7 @@
 int Q[K];       //shared queue
 int error = 0;
 int alarm = 0;
-int num = 0;
+int num = 0;    //amount of data in Q
 
 
 void setup()
@@ -33,6 +33,9 @@ TASK (TaskS){
     //Get analog value of voltage source
     X = analogRead(A0);
 
+    //Critical Section begins
+    GetResource(Sem);
+
     //Checks error
     if(X<10 || X>1013){
         error = 1;
@@ -48,9 +51,6 @@ TASK (TaskS){
         Serial.println("ERROR: Queue Overflow");
     }
     else{
-        //Critical Section begins
-        GetResource(Sem);
-
         Q[add] = X;                 //Inserts new X in Q
         Serial.println(out_S);      //Prints new measured X
         num++;                      //Increment amount of data
@@ -73,6 +73,9 @@ TASK (TaskB){
 
     for(int i=0; i<K; i++){     //Reads all elements in Q
         if(num>0){              //if there are any left
+        
+            //Critical Section begins
+            GetResource(Sem);
 
             //Check if it is greater than the current maximum
             if(Q[rem] > M){
@@ -84,9 +87,6 @@ TASK (TaskB){
                 N = Q[rem];
             }
 
-            //Critical Section begins
-            GetResource(Sem);
-
             num--;              //Decrement amount of data
 
             //Critical Section ends
@@ -95,6 +95,9 @@ TASK (TaskB){
             rem = (rem+1)%K;    //circular buffer: 0 <= rem <= K-1
         }
     }
+
+    //Critical Section begins
+    GetResource(Sem);
 
     //Checks alarm
     if(M-N > 500){
@@ -109,6 +112,9 @@ TASK (TaskB){
     //Print B results
     Serial.println(out_B);
 
+    //Critical Section ends
+    ReleaseResource(Sem);
+
     TerminateTask();
 }
 
@@ -117,6 +123,9 @@ TASK (TaskV){
     static int led_state = 0;
     static int countV = 0;
     static int first_slow = 1;
+
+    //Critical Section begins
+    GetResource(Sem);
 
     //Update state:
 
@@ -140,6 +149,9 @@ TASK (TaskV){
 		digitalWrite(13, LOW);
         first_slow = 1;
 	}
+
+    //Critical Section ends
+    ReleaseResource(Sem);
 
     countV++;
 

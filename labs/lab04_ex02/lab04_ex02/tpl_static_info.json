@@ -52,7 +52,27 @@
   "ioc" : [],
   "isr" : [],
   "message" : [],
-  "resource" : [],
+  "resource" : 
+  [
+    
+    {
+      "ISRUSAGE" : [],
+      "KIND" : "Resource",
+      "NAME" : "Sem",
+      "PRIORITY" : 3,
+      "RESOURCEPROPERTY" : "STANDARD",
+      "TASKUSAGE" : 
+      [
+        
+        {
+          "VALUE" : "TaskV"
+        },        
+        {
+          "VALUE" : "TaskW"
+        }
+      ]
+    }
+  ],
   "task" : 
   [
     
@@ -73,6 +93,13 @@
       "NAME" : "TaskV",
       "NONPREEMPTABLE" : "false",
       "PRIORITY" : 1,
+      "RESOURCE" : 
+      [
+        
+        {
+          "VALUE" : "Sem"
+        }
+      ],
       "SCHEDULE" : "FULL",
       "STACKSIZE" : 256,
       "USEINTERNALRESOURCE" : "false"
@@ -94,6 +121,13 @@
       "NAME" : "TaskW",
       "NONPREEMPTABLE" : "false",
       "PRIORITY" : 2,
+      "RESOURCE" : 
+      [
+        
+        {
+          "VALUE" : "Sem"
+        }
+      ],
       "SCHEDULE" : "FULL",
       "STACKSIZE" : 256,
       "USEINTERNALRESOURCE" : "false"

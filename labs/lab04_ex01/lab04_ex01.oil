@@ -9,7 +9,7 @@ IMPLEMENTATION trampoline {
 };
 
 
-CPU SBV_scheduler {
+CPU SBV_system {
     OS config {
         STATUS = EXTENDED;
         BUILD = TRUE {
@@ -60,10 +60,6 @@ CPU SBV_scheduler {
 
     /************* TASKS DEFINITION *************/
 
-
-
-    /////////////// CHECK PRIORITIES /////////////
-
     TASK TaskS {
         PRIORITY = 3;
         AUTOSTART = TRUE { APPMODE = stdAppmode; };
@@ -85,5 +81,6 @@ CPU SBV_scheduler {
         AUTOSTART = TRUE { APPMODE = stdAppmode; };
         ACTIVATION = 1;
         SCHEDULE = FULL;
+        RESOURCE = Sem;
     };
 };

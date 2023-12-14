@@ -9,7 +9,7 @@ IMPLEMENTATION trampoline {
 };
 
 
-CPU RM_scheduler {
+CPU WV_system {
     OS config {
         STATUS = EXTENDED;
         BUILD = TRUE {
@@ -45,6 +45,13 @@ CPU RM_scheduler {
     };
 
 
+    /************* RESOURCE DEFINITION *************/
+
+    RESOURCE Sem {
+        RESOURCEPROPERTY = STANDARD;
+    };
+
+
     /************* TASKS DEFINITION *************/
 
     TASK TaskW {
@@ -52,6 +59,7 @@ CPU RM_scheduler {
         AUTOSTART = TRUE { APPMODE = stdAppmode; };
         ACTIVATION = 1;
         SCHEDULE = FULL;
+        RESOURCE = Sem;
     };
 
     TASK TaskV {
@@ -59,5 +67,6 @@ CPU RM_scheduler {
         AUTOSTART = TRUE { APPMODE = stdAppmode; };
         ACTIVATION = 1;
         SCHEDULE = FULL;
+        RESOURCE = Sem;
     };
 };

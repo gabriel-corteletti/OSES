@@ -91,6 +91,9 @@
         },        
         {
           "VALUE" : "TaskS"
+        },        
+        {
+          "VALUE" : "TaskV"
         }
       ]
     }
@@ -115,6 +118,13 @@
       "NAME" : "TaskV",
       "NONPREEMPTABLE" : "false",
       "PRIORITY" : 1,
+      "RESOURCE" : 
+      [
+        
+        {
+          "VALUE" : "Sem"
+        }
+      ],
       "SCHEDULE" : "FULL",
       "STACKSIZE" : 256,
       "USEINTERNALRESOURCE" : "false"
