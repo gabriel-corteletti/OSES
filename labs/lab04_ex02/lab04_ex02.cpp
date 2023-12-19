@@ -23,11 +23,11 @@ DeclareResource(Sem);
 
 
 TASK (TaskW){
-    static int Q[K];                //shared queue
-    static int num = 0;             //amount of data in Q
+    static int Q[K];            //shared queue
+    static int num = 0;         //amount of data in Q
 
     static int X;
-    static int add = 0;            //position to add next element
+    static int add = 0;         //position to add next element
     char out_S[64];
      
     static int rem = 0;         //position to remove next element
@@ -118,35 +118,40 @@ TASK (TaskV){
     static int led_state = 0;
     static int countV = 0;
     static int first_slow = 1;
+    int error_cp;
+    int alarm_cp;
 
     //Critical Section begins
     GetResource(Sem);
 
+    error_cp = error;
+    alarm_cp = alarm;
+    
+    //Critical Section ends
+    ReleaseResource(Sem);
+
     //Update state:
 
-	if (error){					        //fast
+	if (error_cp){					        //fast
 		digitalWrite(13, led_state);
 		led_state = !led_state;
         first_slow = 1;
 	}
   
-	else if (alarm && countV >= 4){     //slowly
-        if (first_slow){                //if it's the first instance of "slow"
-            led_state = 1;              //starts blinking with led ON
-        }                               //so the change can always be seen
+	else if (alarm_cp && countV >= 4){      //slowly
+        if (first_slow){                    //if it's the first instance of "slow"
+            led_state = 1;                  //starts blinking with led ON
+        }                                   //so the change can always be seen
 		digitalWrite(13, led_state);
         led_state = !led_state;
 		countV = 0;
         first_slow = 0;
 	}
 
-    else if (!alarm){		            //OFF
+    else if (!alarm_cp){		            //OFF
 		digitalWrite(13, LOW);
         first_slow = 1;
 	}
-
-    //Critical Section ends
-    ReleaseResource(Sem);
 
     countV++;
 
