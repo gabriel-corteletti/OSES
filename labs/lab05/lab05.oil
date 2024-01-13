@@ -1,0 +1,92 @@
+OIL_VERSION = "2.5";
+
+
+IMPLEMENTATION trampoline {
+	//Fix the default STACKSIZE of tasks
+	TASK {
+        UINT32 STACKSIZE = 256;
+	};
+};
+
+
+CPU Heartbeat_Monitor {
+    OS config {
+        STATUS = EXTENDED;
+        BUILD = TRUE {
+            TRAMPOLINE_BASE_PATH = "../..";
+            APP_NAME = "lab05_exe";
+            APP_SRC = "lab05.cpp";
+            CPPCOMPILER = "avr-g++";
+            COMPILER = "avr-gcc";
+            LINKER = "avr-gcc";
+            ASSEMBLER = "avr-gcc";
+            COPIER = "avr-objcopy";
+            SYSTEM = PYTHON;
+            LIBRARY = serial;
+        };
+        SYSTEM_CALL = TRUE;
+    };
+ 
+    APPMODE stdAppmode {};
+  
+
+    /************* ALARMS DEFINITION *************/
+
+    ALARM alarmS {              //every 20ms
+        COUNTER = SystemCounter;
+        ACTION = ACTIVATETASK { TASK = TaskS; };
+        AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 20; CYCLETIME = 20; };
+    };
+  
+    // ALARM alarmC {              //every 1000ms
+    //     COUNTER = SystemCounter;
+    //     ACTION = ACTIVATETASK { TASK = TaskC; };
+    //     AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 977; CYCLETIME = 977; };
+    // };
+
+
+    /************* MESSAGES DEFINITION *************/
+
+    MESSAGE msgS_send {             //message PRODUCED by S
+        MESSAGEPROPERTY = SEND_STATIC_INTERNAL{
+            CDATATYPE = "int";
+        };
+    };
+
+    MESSAGE msgC_receive {         //message RECEIVED by C
+        MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
+            SENDINGMESSAGE = msgS_send;
+        };
+        NOTIFICATION = ACTIVATETASK {
+            TASK = TaskC;
+        };
+    };
+
+
+    /************* RESOURCE DEFINITION *************/
+
+    RESOURCE Sem {
+        RESOURCEPROPERTY = STANDARD;
+    };
+
+
+    /************* TASKS DEFINITION *************/
+
+    TASK TaskS {
+        PRIORITY = 2;
+        AUTOSTART = TRUE { APPMODE = stdAppmode; };
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+        MESSAGE = msgS_send;
+        RESOURCE = Sem;
+    };
+
+    TASK TaskC {
+        PRIORITY = 1;
+        AUTOSTART = FALSE;
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+        MESSAGE = msgC_receive;
+        RESOURCE = Sem;
+    };
+};
