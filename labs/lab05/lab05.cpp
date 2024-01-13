@@ -42,7 +42,7 @@ TASK (TaskS){
         num++;                      //increment amount of data
 
         //prints new data
-        // Serial.print("S: ");       
+        Serial.print("S: ");       
         Serial.print(S);
         Serial.print("\t| ");
         Serial.println(num);
@@ -102,11 +102,27 @@ TASK (TaskC){
                 }
                 s_count = 0;
             }
+        }
+        else {
+            if ((Q[rem] > Q[prev_rem]) && (Q[rem] > 1000)) {
+                Serial.print("\t\tPEAK: ");
+                Serial.println(Q[rem]);
 
-            // if ((Q[rem] < Q[prev_rem]) && (Q[rem] < Q[next_rem])) {
-            //     Serial.print("\t\tMIN PEAK: ");
-            //     Serial.println(Q[rem]);
-            // }
+                if (!first_peak) {
+                    RR = s_count*0.02;
+                    HR = 60/RR;
+                    // Serial.print("\t\tRR: ");
+                    // Serial.print(RR);
+                    // Serial.print("  |  HR: ");
+                    Serial.print("\t\tHR: ");
+                    Serial.println(HR);
+                }
+                else {
+                    first_peak = 0;
+                }
+                s_count = 0;
+
+            }
         }
 
         num--;                      //decrement amount of data
@@ -116,9 +132,6 @@ TASK (TaskC){
         s_count++;                  //increment sample counter
         rem = next_rem; //(rem+1)%K;            //circular buffer: 0 <= rem <= K-1
     }
-
-
-    Serial.println("-------DONE------");
 
     TerminateTask();
 }
