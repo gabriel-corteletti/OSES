@@ -70,6 +70,7 @@ TASK (TaskC){
     static int first_peak = 1;
     float RR;
     float HR;
+    static int peak_flag = 0;
 
 
     for(int i=0; i<50; i++){        //reads 50 elements in Q
@@ -79,51 +80,60 @@ TASK (TaskC){
 
         GetResource(Sem);               //Critical Section begins
 
-        if (i<49) { //if (i>1 && i<49) {          //discards the first and last of the 50 samples
-            
-            // next_rem = (rem + 1)%K;
-            // prev_rem = (rem - 1 + K)%K;
+        // if (i<49) {         //if (i>1 && i<49) {          //discards the first and last of the 50 samples
+        //     if ((Q[rem] > Q[prev_rem]) && (Q[rem] > Q[next_rem])) {
+        //         peak_flag = 1;
+        //     }
+        // }
+        // else if ((Q[rem] > Q[prev_rem]) && (Q[rem] > 1000)) {
+        //     peak_flag = 1;
+        // }
 
-            if ((Q[rem] > Q[prev_rem]) && (Q[rem] > Q[next_rem])) {
-                Serial.print("\t\tPEAK: ");
-                Serial.println(Q[rem]);
-
-                if (!first_peak) {
-                    RR = s_count*0.02;
-                    HR = 60/RR;
-                    // Serial.print("\t\tRR: ");
-                    // Serial.print(RR);
-                    // Serial.print("  |  HR: ");
-                    Serial.print("\t\tHR: ");
-                    Serial.println(HR);
-                }
-                else {
-                    first_peak = 0;
-                }
-                s_count = 0;
+        if (((i<49) && (Q[rem] > Q[prev_rem]) && (Q[rem] > Q[next_rem])) ||
+            ((i==49) && (Q[rem] > Q[prev_rem]) && (Q[rem] > 1000))) {         //if (i>1 && i<49) {          //discards the first and last of the 50 samples
+            // peak_flag = 1;
+            Serial.print("\t\tPEAK: ");
+            Serial.println(Q[rem]);
+            if (!first_peak) {
+                RR = s_count*0.02;
+                HR = 60/RR;
+                // Serial.print("\t\tRR: ");
+                // Serial.print(RR);
+                // Serial.print("  |  HR: ");
+                Serial.print("\t\tHR: ");
+                Serial.println(HR);
             }
-        }
-        else {
-            if ((Q[rem] > Q[prev_rem]) && (Q[rem] > 1000)) {
-                Serial.print("\t\tPEAK: ");
-                Serial.println(Q[rem]);
-
-                if (!first_peak) {
-                    RR = s_count*0.02;
-                    HR = 60/RR;
-                    // Serial.print("\t\tRR: ");
-                    // Serial.print(RR);
-                    // Serial.print("  |  HR: ");
-                    Serial.print("\t\tHR: ");
-                    Serial.println(HR);
-                }
-                else {
-                    first_peak = 0;
-                }
-                s_count = 0;
-
+            else {
+                first_peak = 0;
             }
+            s_count = 0;
         }
+
+
+
+
+
+
+        // if (peak_flag) {
+        //     Serial.print("\t\tPEAK: ");
+        //     Serial.println(Q[rem]);
+        //     if (!first_peak) {
+        //         RR = s_count*0.02;
+        //         HR = 60/RR;
+        //         // Serial.print("\t\tRR: ");
+        //         // Serial.print(RR);
+        //         // Serial.print("  |  HR: ");
+        //         Serial.print("\t\tHR: ");
+        //         Serial.println(HR);
+        //     }
+        //     else {
+        //         first_peak = 0;
+        //     }
+        //     s_count = 0;
+        //     peak_flag = 0;
+        // }
+
+
 
         num--;                      //decrement amount of data
 
