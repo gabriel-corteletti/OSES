@@ -37,12 +37,6 @@ CPU Heartbeat_Monitor {
         ACTION = ACTIVATETASK { TASK = TaskS; };
         AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 20; CYCLETIME = 20; };
     };
-  
-    // ALARM alarmC {              //every 1000ms
-    //     COUNTER = SystemCounter;
-    //     ACTION = ACTIVATETASK { TASK = TaskC; };
-    //     AUTOSTART = TRUE { APPMODE = stdAppmode; ALARMTIME = 977; CYCLETIME = 977; };
-    // };
 
 
     /************* MESSAGES DEFINITION *************/

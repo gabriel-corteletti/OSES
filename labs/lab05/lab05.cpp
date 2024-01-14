@@ -24,9 +24,10 @@ DeclareResource(Sem);
 
 
 TASK (TaskS){
-    static int msgS = 1;                    //message to activate consumer
     static int S;                           //sample of the signal
     static int add = 0;                     //position to add next element
+    static int msgS = 1;                    //message to activate consumer
+    static int S_count = 0;                 //sample counter
 
     S = analogRead(A0);                     //get a new sample of the signal
 
@@ -40,17 +41,12 @@ TASK (TaskS){
     else{
         Q[add] = S;                         //inserts new S in Q
         num++;                              //increment amount of data
-
-        //prints new data
-        Serial.print("S: ");       
-        Serial.print(S);
-        Serial.print("\t| ");
-        Serial.println(num);
+        S_count++;
 
         //Checks if there are already 50 samples to activate consumer
-        if (num >= 50) {
-            Serial.println("-------Activate C--------");
+        if (S_count >= 50) {
 	        SendMessage(msgS_send, &msgS);
+            S_count = 0;
         }
 
         ReleaseResource(Sem);               //Critical Section ends
@@ -66,12 +62,12 @@ TASK (TaskC){
     static int rem = 0;                     //position to remove next element
     static int next_rem;
     static int prev_rem;
-    static int s_count = 0;
-    static int first_peak = 1;
+    static int RR_count = 0;                //distance counter
+    static int first_peak = 1;              //flag for the 1st ever peak
+    static int peak_flag = 0;               //flag for peak found
+    static int psbl_peak = -1;              //possible peak to be considered
     float RR;
     float HR;
-    static int peak_flag = 0;
-    static int psbl_peak = -1;
 
 
     for(int i=0; i<50; i++){                //reads 50 elements in Q
@@ -81,23 +77,13 @@ TASK (TaskC){
 
         GetResource(Sem);                   //Critical Section begins
 
-        // if (((i<49) && (Q[rem] > Q[prev_rem]) && (Q[rem] >= Q[next_rem])) ||
-        //     ((i==49) && (Q[rem] > Q[prev_rem]) && (Q[rem] > 1000))) {         //if (i>1 && i<49) {          //discards the first and last of the 50 samples
-        //     peak_flag = 1;
-        //     Serial.print("\t\tPEAK: ");
-        //     Serial.println(Q[rem]);
-        // }
-
-        if ((i==0) && (psbl_peak >= Q[rem])) {                              //check if possible peak is
-            peak_flag = 1;                                                  //indeed an actual peak
-            Serial.print("\t\t###POSSIBLE PEAK: ");
-            Serial.println(psbl_peak);
+        if ((i==0) && (psbl_peak >= Q[rem])) {                  //check if possible peak is
+            peak_flag = 1;                                      //indeed an actual peak
+            RR_count--;                                         //decrement counter to match previous time
         }
         psbl_peak = -1;                                                     //resets possible peak
         if ((i<49) && (Q[rem] > Q[prev_rem]) && (Q[rem] >= Q[next_rem])) {  //find peaks
             peak_flag = 1;
-            Serial.print("\t\tPEAK: ");
-            Serial.println(Q[rem]);
         }
         else if ((i==49) && (Q[rem] > Q[prev_rem]) && (Q[rem] > 900)) {     //special case for last sample
             psbl_peak = Q[rem];                                             //save possible peak
@@ -109,20 +95,20 @@ TASK (TaskC){
 
         if (peak_flag) {                    //if a peak was found
             if (!first_peak) {              //check if it's not the 1st
-                RR = s_count*0.02;
+                RR = RR_count*0.02;
                 HR = 60/RR;
-                Serial.print("\t\tHR: ");
+                Serial.print("HR: ");
                 Serial.println(HR);
             }
             else {                          //updates the first flag
                 first_peak = 0;
             }
 
-            s_count = 0;                    //resets sample counter
+            RR_count = 0;                   //resets sample counter
             peak_flag = 0;                  //reset peak flag
         }
 
-        s_count++;                          //increment sample counter
+        RR_count++;                         //increment sample counter
         rem = next_rem;                     //circular buffer: 0 <= rem <= K-1
     }
 
